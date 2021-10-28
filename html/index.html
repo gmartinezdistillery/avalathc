@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AVALA Take Home Challenge</title>
+<script>
+var blacklist = ["000FF1CE", "00BAB10C", "1BADB002", "00004B1D", "8BADF00D", "ABADBABE", "B105F00D", "B16B00B5", "0B00B135", "BAAAAAAD", "BAADF00D", "BAD22222", "BADDCAFE", "CAFEB0BA", "B0BABABE", "BEEFBABE", "0000B000", "C00010FF", "0D06F00D", "CAFEBABE", "CAFED00D", "CEFAEDFE", "0D15EA5E", "DABBAD00", "DEAD2BAD", "DEADBAAD", "DEADBABE", "DEADBEAF", "DEADBEEF", "DEADC0DE", "DEADDEAD", "DEADD00D", "DEADFA11", "DEAD10CC", "DEADFEED", "DECAFBAD", "DEFEC8ED", "D0D0CACA", "E011CFD0", "0000F1AC", "FACEB00C", "FACEFEED", "FBADBEEF", "FEE1DEAD", "FEEDBABE", "FEEDC0DE", "FEEDFACE", "CAFEBEEF", "FFBADD11", "F00DBABE"]
+if (localStorage.getItem("storedUsed")) {
+    used = JSON.parse(localStorage.getItem("storedUsed"));
+} else {
+    used = [];
+}
+function main() {
+  var blisted = false;
+  do {
+    var color = (("0000000"+(Math.floor(Math.random() * 4294967296)).toString(16)).substr(-8)).toUpperCase();
+    if (blacklist.indexOf(color) != -1)
+     blisted = true;
+    if (used.indexOf(color) != -1)
+     blisted = true;
+  } while (blisted);
+
+  var col=document.getElementById("challenge");
+  col.style.color='#'+color;
+  var message = '0x'+color;
+  document.getElementById("challenge").innerHTML = message;
+  used.push(color);
+  if (used.length < (4294967296-blacklist.length))
+   localStorage.setItem("storedUsed", JSON.stringify(used));
+  else
+   localStorage.removeItem("storedUsed");
+}
+</script>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+
+<body>
+
+<h1>AVALA take home Challenge</h1>
+<p id="challenge">click on the button to reveal your color.....</p>
+
+<button onclick="main()">New Color</button>
+<div id="message"></div>
+
+</body>
+</html>

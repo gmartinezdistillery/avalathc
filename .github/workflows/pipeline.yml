@@ -1,0 +1,46 @@
+# This is a basic workflow
+name: CI
+
+env:
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+  K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA: ${{ secrets.K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA }}
+  K8S_SERVER: ${{ secrets.K8S_SERVER }}
+  K8S_CLUSTER_NAME: ${{ secrets.K8S_CLUSTER_NAME }}
+  K8S_USER_NAME: ${{ secrets.K8S_USER_NAME }}
+  K8S_CONTEXT_NAME: ${{ secrets.K8S_CONTEXT_NAME }}
+  K8S_CURRENT_CONTEXT: ${{ secrets.K8S_CURRENT_CONTEXT }}
+  K8S_USER_CLIENT_CERTIFICATE_DATA: ${{ secrets.K8S_USER_CLIENT_CERTIFICATE_DATA }}
+  K8S_USER_CLIENT_KEY_DATA: ${{ secrets.K8S_USER_CLIENT_KEY_DATA }}
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  pipeline:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run a multi-line script
+        run: |
+          #Get Variables working
+          export LABEL=$(git rev-parse --short "$GITHUB_SHA")
+          mkdir -p ~/.kube
+          envsubst < config.template > ~/.kube/config
+          chmod 600 ~/.kube/config
+          #push to docker hub
+          docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+          docker build -t playgali/avalathc:${LABEL} -t playgali/avalathc:latest .
+          docker push playgali/avalathc:${LABEL}
+          docker push playgali/avalathc:latest
+          kubectl version
+          helm version
+          helm upgrade --install --namespace default -f webapp/values/values.avala.yaml avalathc webapp/

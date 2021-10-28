@@ -1,2 +1,2 @@
-# avalathc
-Avala Take Home Challenge
+# AVALA Take Home Challenge
+Hope its self explanatory
